@@ -3,10 +3,23 @@
 }
 .header{
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    border: 2px solid brown;
 }
-.header img{
-    width: 200px;
-    height: 200px;
+
+.logo{
+    width: 100px;
+}
+
+
+.nav-items > ul{
+    display: flex;
+    list-style-type: none;    
+    font-size: 20px;
+}
+
+
+.nav-items > ul > li{
+padding:10px;
+margin: 10px;
 }
