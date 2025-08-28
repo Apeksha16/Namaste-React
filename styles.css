@@ -4,7 +4,7 @@
 .header{
     display: flex;
     justify-content: space-between;
-    border: 2px solid brown;
+    /* border: 2px solid brown; */
     align-items: center;
 }
 
@@ -163,4 +163,13 @@ body {
 .filter-btn:hover {
     background: linear-gradient(90deg, #fecd1a 0%, #a259ff 100%);
     color: #fff7e6;
+}
+
+.login{
+    padding: 0 20px;
+    cursor: pointer;
+}
+
+.filter{
+    display: flex;
 }
