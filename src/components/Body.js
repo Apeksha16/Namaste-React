@@ -35,21 +35,20 @@ const Body = () => {
   return listOfRestaurants.length === 0 ? (
     <Shimmer />
   ) : (
-    <div className="body">
-      <div className="filter">
-        <div className="search">
+    <div className="px-4 py-8 max-w-7xl mx-auto">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
+        <div className="flex gap-2">
           <input
             type="text"
-            className="search-box"
+            className="border rounded px-3 py-2 focus:outline-none focus:ring w-64"
             value={searchText}
             onChange={(e) => {
               setSearchText(e.target.value);
             }}
           />
           <button
+            className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600"
             onClick={() => {
-              console.log(searchText);
-
               const filteredRestaurant = listOfRestaurants.filter((res) =>
                 res.info.name.toLowerCase().includes(searchText.toLowerCase())
               );
@@ -60,24 +59,23 @@ const Body = () => {
           </button>
         </div>
         <button
-          className="filter-btn"
+          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 cursor-pointer"
           onClick={() => {
             const filteredList = listOfRestaurants.filter(
-              (res) => res.info.avgRating > 4.5
+              (res) => Number(res.info.avgRating) > 4.6
             );
-            setListOfRestaurants(filteredList);
+            setFilteredRestaurant(filteredList);
           }}
         >
           Top Rated Restaurants
         </button>
       </div>
-      <div className="res-container">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {filteredRestaurant.map((restaurant) => (
           <Link
             key={restaurant.info.id}
             to={"/restaurant/" + restaurant.info.id}
           >
-            {" "}
             <RestaurantCard resData={restaurant.info} />
           </Link>
         ))}
