@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 
 const CartPreview = ({ isVisible }) => {
   const cartItems = useSelector((store) => store.cart.items);
