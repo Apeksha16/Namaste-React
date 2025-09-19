@@ -4,7 +4,8 @@
   "description": "This is Namaste React ",
   "scripts": {
     "start": "parcel index.html",
-    "build": "parcel build index.html",
+    "build": "parcel build index.html --no-source-maps",
+    "clean": "rm -rf dist .parcel-cache",
     "test": "jest"
   },
   "repository": {
