@@ -1,6 +1,9 @@
+import { useDispatch, useSelector } from "react-redux";
+import { addItem, removeItem, replaceCart } from "../utils/cartSlice";
+import { useState } from "react";
+import RestaurantChangeModal from "./RestaurantChangeModal";
 
-
-const RestaurantCategory = ({ data, showItems, setShowIndex }) => {
+const RestaurantCategory = ({ data, showItems, setShowIndex, restaurantInfo }) => {
   const handleClick = () => {
     setShowIndex();
   };
@@ -37,15 +40,74 @@ const RestaurantCategory = ({ data, showItems, setShowIndex }) => {
       </div>
 
       {/* Accordion Body */}
-      {showItems && <ItemList items={items} />}
+      {showItems && <ItemList items={items} restaurantInfo={restaurantInfo} />}
     </div>
   );
 };
 
-const ItemList = ({ items }) => {
+const ItemList = ({ items, restaurantInfo }) => {
+  const dispatch = useDispatch();
+  const cartItems = useSelector((store) => store.cart.items);
+  const cartRestaurantInfo = useSelector((store) => store.cart.restaurantInfo);
+  const [showModal, setShowModal] = useState(false);
+  const [pendingItem, setPendingItem] = useState(null);
+
+  const handleAddItem = (item) => {
+    const itemToAdd = {
+      ...item.card.info,
+      imageId: item.card.info.imageId
+    };
+
+    // Check if cart has items from different restaurant
+    if (cartItems.length > 0 && cartRestaurantInfo && cartRestaurantInfo.id !== restaurantInfo.id) {
+      setPendingItem(itemToAdd);
+      setShowModal(true);
+      return;
+    }
+
+    // Add item normally
+    dispatch(addItem({
+      item: itemToAdd,
+      restaurantInfo: restaurantInfo
+    }));
+  };
+
+  const handleRemoveItem = (item) => {
+    dispatch(removeItem(item.card.info));
+  };
+
+  const handleConfirmReplace = () => {
+    if (pendingItem) {
+      dispatch(replaceCart({
+        item: pendingItem,
+        restaurantInfo: restaurantInfo
+      }));
+    }
+    setShowModal(false);
+    setPendingItem(null);
+  };
+
+  const handleCancelReplace = () => {
+    setShowModal(false);
+    setPendingItem(null);
+  };
+
+  const getItemQuantity = (itemId) => {
+    const cartItem = cartItems.find((item) => item.id === itemId);
+    return cartItem ? cartItem.quantity : 0;
+  };
+
   return (
-    <div className="divide-y divide-gray-100">
-      {items.map((item) => (
+    <>
+      <RestaurantChangeModal
+        isOpen={showModal}
+        onClose={handleCancelReplace}
+        onConfirm={handleConfirmReplace}
+        currentRestaurant={cartRestaurantInfo?.name}
+        newRestaurant={restaurantInfo?.name}
+      />
+      <div className="divide-y divide-gray-100">
+        {items.map((item) => (
         <div
           key={item.card.info.id}
           className="p-5 flex justify-between items-start"
@@ -116,22 +178,69 @@ const ItemList = ({ items }) => {
                   className="w-32 h-32 object-cover rounded-lg"
                   alt={item.card.info.name}
                 />
-                <button className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-white border border-gray-300 text-green-600 font-bold px-6 py-2 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                  ADD
-                </button>
+                {getItemQuantity(item.card.info.id) === 0 ? (
+                  <button 
+                    onClick={() => handleAddItem(item)}
+                    className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-white border border-gray-300 text-green-600 font-bold px-6 py-2 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+                  >
+                    ADD
+                  </button>
+                ) : (
+                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-white border border-gray-300 rounded-lg shadow-md flex items-center">
+                    <button 
+                      onClick={() => handleRemoveItem(item)}
+                      className="text-green-600 font-bold px-3 py-2 hover:bg-gray-50 cursor-pointer"
+                    >
+                      −
+                    </button>
+                    <span className="px-3 py-2 font-bold text-green-600">
+                      {getItemQuantity(item.card.info.id)}
+                    </span>
+                    <button 
+                      onClick={() => handleAddItem(item)}
+                      className="text-green-600 font-bold px-3 py-2 hover:bg-gray-50 cursor-pointer"
+                    >
+                      +
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center relative">
                 <span className="text-gray-400 text-xs">No Image</span>
-                <button className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-white border border-gray-300 text-green-600 font-bold px-6 py-2 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                  ADD
-                </button>
+                {getItemQuantity(item.card.info.id) === 0 ? (
+                  <button 
+                    onClick={() => handleAddItem(item)}
+                    className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-white border border-gray-300 text-green-600 font-bold px-6 py-2 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+                  >
+                    ADD
+                  </button>
+                ) : (
+                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-white border border-gray-300 rounded-lg shadow-md flex items-center">
+                    <button 
+                      onClick={() => handleRemoveItem(item)}
+                      className="text-green-600 font-bold px-3 py-2 hover:bg-gray-50 cursor-pointer"
+                    >
+                      −
+                    </button>
+                    <span className="px-3 py-2 font-bold text-green-600">
+                      {getItemQuantity(item.card.info.id)}
+                    </span>
+                    <button 
+                      onClick={() => handleAddItem(item)}
+                      className="text-green-600 font-bold px-3 py-2 hover:bg-gray-50 cursor-pointer"
+                    >
+                      +
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
         </div>
       ))}
-    </div>
+      </div>
+    </>
   );
 };
 

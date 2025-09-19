@@ -155,6 +155,13 @@ const RestaurantMenu = () => {
                 setShowIndex={() =>
                   setShowIndex(index === showIndex ? null : index)
                 }
+                restaurantInfo={{
+                  id: restaurantInfo.id,
+                  name: restaurantInfo.name,
+                  cuisines: restaurantInfo.cuisines,
+                  avgRating: restaurantInfo.avgRating,
+                  costForTwoMessage: restaurantInfo.costForTwoMessage,
+                }}
               />
             ))}
           </div>

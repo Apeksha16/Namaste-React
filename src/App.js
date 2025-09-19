@@ -5,21 +5,23 @@ import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import "../index.css";
 import About from "./components/About";
 import Contact from "./components/Contact";
-
 import Error from "./components/Error";
 import RestaurantMenu from "./components/RestaurantMenu";
 import Cart from "./components/Cart";
 import { lazy, Suspense } from "react";
+import { Provider } from "react-redux";
+import appStore from "./utils/store";
 
-
-const Grocery = lazy(() => import ("./components/Grocery"));
+const Grocery = lazy(() => import("./components/Grocery"));
 
 const AppLayout = () => {
   return (
-    <div className="app">
-      <Header />
-    <Outlet/>
-    </div>
+    <Provider store={appStore}>
+      <div className="app">
+        <Header />
+        <Outlet />
+      </div>
+    </Provider>
   );
 };
 
